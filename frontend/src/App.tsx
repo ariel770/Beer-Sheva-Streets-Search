@@ -33,12 +33,26 @@ function App() {
         setTimeout(() => setToast({ show: false, msg: '' }), 3000);
     };
 
-    const handleSearch = async () => {
+    const handleSearch = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
         if (!query.trim()) return;
-        setLoading(true);
+
+        // Reset state
+        setResults([]);
+
+        let skeletonTimeout: NodeJS.Timeout | null = null;
+
+        // Only show loading if it takes more than 300ms
+        skeletonTimeout = setTimeout(() => {
+            setLoading(true);
+        }, 300);
+
         try {
             const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&type=${searchType}`);
             const data = await response.json();
+
+            if (skeletonTimeout) clearTimeout(skeletonTimeout);
+
             setResults(data);
             if (data.length === 0) {
                 showMessage('לא נמצאו תוצאות לחיפוש שלך');
@@ -47,6 +61,7 @@ function App() {
             console.error('Search error:', error);
             showMessage('שגיאה בביצוע החיפוש');
         } finally {
+            if (skeletonTimeout) clearTimeout(skeletonTimeout);
             setLoading(false);
         }
     };
@@ -130,7 +145,7 @@ function App() {
             </nav>
 
             <section className="search-hero">
-                <div className="search-box-unified">
+                <form className="search-box-unified" onSubmit={handleSearch}>
                     <div className="input-integrated-group">
                         <span className="search-icon-fixed">🔍</span>
                         <input
@@ -139,9 +154,8 @@ function App() {
                             placeholder="הקלד שם רחוב או שכונה לחיפוש..."
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                         />
-                        <button className="unified-btn" onClick={handleSearch} disabled={loading}>
+                        <button type="submit" className="unified-btn" disabled={loading}>
                             {loading ? '...' : 'חיפוש'}
                         </button>
                     </div>
@@ -160,71 +174,72 @@ function App() {
                             <span>ביטוי שלם</span>
                         </label>
                     </div>
-                </div>
+                </form>
             </section>
 
             <main className="results-container">
-                {loading ? (
-                    <ShimmerLoader />
-                ) : (
-                    <div className="results-grid">
-                        {results.map((street) => (
-                            <div
-                                key={street.id}
-                                className={`record-card ${deletingIds.has(street.id) ? 'fade-out' : ''}`}
-                            >
-                                <h3 className="card-title">{street.street_name}</h3>
+                <div className={`content-transition ${loading ? 'content-hidden' : ''}`}>
+                    {loading ? (
+                        <ShimmerLoader />
+                    ) : (
+                        <div className="results-grid">
+                            {results.map((street) => (
+                                <div
+                                    key={street.id}
+                                    className={`record-card ${deletingIds.has(street.id) ? 'fade-out' : ''}`}
+                                >
+                                    <h3 className="card-title">{street.street_name}</h3>
 
-                                <div className="card-fields-grid">
-                                    <div className="field-box">
-                                        <span className="label-text">שם רחוב</span>
-                                        <span className="value-text">{street.street_name}</span>
+                                    <div className="card-fields-grid">
+                                        <div className="field-box">
+                                            <span className="label-text">שם רחוב</span>
+                                            <span className="value-text">{street.street_name}</span>
+                                        </div>
+                                        <div className="field-box">
+                                            <span className="label-text">קוד רחוב</span>
+                                            <span className="value-text">{street.street_code || 'ללא קוד'}</span>
+                                        </div>
+                                        <div className="field-box">
+                                            <span className="label-text">שכונה</span>
+                                            <span className="value-text">{street.neighborhood || 'כללית'}</span>
+                                        </div>
+                                        <div className="field-box">
+                                            <span className="label-text">סוג רחוב</span>
+                                            <span className="value-text">{street.type || 'רחוב'}</span>
+                                        </div>
+                                        <div className="field-box">
+                                            <span className="label-text">עיר</span>
+                                            <span className="value-text">{street.city}</span>
+                                        </div>
+                                        <div className="field-box">
+                                            <span className="label-text">מיקוד</span>
+                                            <span className="value-text">{street.zip_code || '---'}</span>
+                                        </div>
                                     </div>
-                                    <div className="field-box">
-                                        <span className="label-text">קוד רחוב</span>
-                                        <span className="value-text">{street.street_code || 'ללא קוד'}</span>
-                                    </div>
-                                    <div className="field-box">
-                                        <span className="label-text">שכונה</span>
-                                        <span className="value-text">{street.neighborhood || 'כללית'}</span>
-                                    </div>
-                                    <div className="field-box">
-                                        <span className="label-text">סוג רחוב</span>
-                                        <span className="value-text">{street.type || 'רחוב'}</span>
-                                    </div>
-                                    <div className="field-box">
-                                        <span className="label-text">עיר</span>
-                                        <span className="value-text">{street.city}</span>
-                                    </div>
-                                    <div className="field-box">
-                                        <span className="label-text">מיקוד</span>
-                                        <span className="value-text">{street.zip_code || '---'}</span>
+
+                                    <div className="card-footer">
+                                        <a
+                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(street.street_name + ' באר שבע')}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="btn-map"
+                                        >
+                                            <span>📍 מפה</span>
+                                        </a>
+
+                                        <button
+                                            className="btn-delete"
+                                            onClick={() => handleDelete(street.id)}
+                                            disabled={deletingIds.has(street.id)}
+                                        >
+                                            <span>🗑️</span>
+                                            <span>מחיקה</span>
+                                        </button>
                                     </div>
                                 </div>
-
-                                <div className="card-footer">
-                                    <a
-                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(street.street_name + ' באר שבע')}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="btn-map"
-                                    >
-                                        <span>📍 מפה</span>
-                                    </a>
-
-                                    <button
-                                        className="btn-delete"
-                                        onClick={() => handleDelete(street.id)}
-                                        disabled={deletingIds.has(street.id)}
-                                    >
-                                        <span>🗑️</span>
-                                        <span>מחיקה</span>
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                            ))}
+                        </div>
+                </div>
 
                 {!loading && results.length === 0 && query && (
                     <div style={{ textAlign: 'center', padding: '4rem' }}>

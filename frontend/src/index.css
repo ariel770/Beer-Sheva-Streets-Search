@@ -311,13 +311,25 @@ body {
   border-color: #fca5a5;
 }
 
-/* Skeletons */
+/* Skeletons - Exact match to .record-card */
 .skeleton-box {
-  height: 280px;
-  background: #e2e8f0;
+  height: 382px;
+  /* Fixed height based on 6 fields and padding */
+  background: white;
   border-radius: var(--radius);
+  border: 1px solid var(--border);
   position: relative;
   overflow: hidden;
+}
+
+/* Cross-fade Transitions */
+.content-transition {
+  transition: opacity 0.2s ease-in-out;
+  opacity: 1;
+}
+
+.content-hidden {
+  opacity: 0;
 }
 
 .skeleton-box::after {
