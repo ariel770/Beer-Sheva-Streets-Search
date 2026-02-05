@@ -1,4 +1,4 @@
-import { ElasticSearchService } from '../src/services/ElasticSearchService';
+import { ElasticSearchService } from '../services/ElasticSearchService';
 
 // Mocking the Elasticsearch Client
 jest.mock('@elastic/elasticsearch', () => {
