@@ -10,8 +10,8 @@
   --danger-hover: #dc2626;
   --radius: 12px;
   --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --row-alt: #f0fdf4;
-  /* Light Green for zebra stripes */
+  --row-alt: #ecfdf5 !important;
+  /* Slightly more visible Light Green */
 }
 
 body {
@@ -34,14 +34,13 @@ body {
   padding: 1rem;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   border: 1px dashed var(--primary);
 }
 
 .upload-section h3 {
-  margin: 0 0 0.75rem 0;
-  font-size: 0.95rem;
-  color: var(--text-main);
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
 }
 
 .upload-controls {
@@ -51,13 +50,14 @@ body {
 }
 
 .upload-btn {
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.8rem;
   background-color: var(--primary);
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .upload-btn:disabled {
@@ -65,34 +65,27 @@ body {
   cursor: not-allowed;
 }
 
-.upload-status {
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  color: var(--primary);
-}
-
 .search-container {
   background: var(--card-bg);
-  padding: 1.5rem;
+  padding: 1rem 1.5rem;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .search-field {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 input[type="text"] {
   flex: 1;
-  padding: 0.6rem 1rem;
+  padding: 0.5rem 1rem;
   border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 1rem;
   outline: none;
-  transition: border-color 0.2s;
 }
 
 input[type="text"]:focus {
@@ -100,24 +93,19 @@ input[type="text"]:focus {
 }
 
 button.search-btn {
-  padding: 0.6rem 1.5rem;
+  padding: 0.5rem 1.25rem;
   background-color: var(--primary);
   color: white;
   border: none;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-button.search-btn:hover {
-  background-color: var(--primary-hover);
 }
 
 .radio-group {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .radio-option {
@@ -125,23 +113,22 @@ button.search-btn:hover {
   align-items: center;
   gap: 1.25rem;
   cursor: pointer;
-  font-size: 1.1rem;
-  color: var(--text-main);
+  font-size: 1rem;
 }
 
 .radio-option input[type="radio"] {
-  transform: scale(2);
-  margin: 0 10px;
-  cursor: pointer;
+  transform: scale(1.8);
+  /* Re-adjust scale slightly */
+  margin: 0 8px;
 }
 
-/* Updated results window: fixed smaller height (approx 2 rows) */
+/* Results window: even smaller height for exactly ~2 rows */
 .results-window {
   background: var(--card-bg);
   border-radius: 8px;
   box-shadow: var(--shadow);
-  height: 110px;
-  /* Smaller height for ~2 rows */
+  height: 85px;
+  /* Forced smaller height */
   overflow-y: auto;
   border: 1px solid var(--border);
 }
@@ -149,33 +136,31 @@ button.search-btn:hover {
 .results-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
-/* Hide table headers as requested */
 .results-table thead {
-  display: none;
+  display: none !important;
+  /* Force hide headers */
 }
 
 .results-table td {
-  padding: 10px 15px;
+  padding: 8px 12px;
   border-bottom: 1px solid var(--border);
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* Zebra striping: Light Green and White */
+/* Explicit zebra striping with !important to prevent any override */
 .results-table tr:nth-child(odd) {
-  background-color: var(--row-alt);
-  /* Light Green */
+  background-color: var(--row-alt) !important;
 }
 
 .results-table tr:nth-child(even) {
-  background-color: #ffffff;
-  /* White */
-}
-
-.results-table tr:hover {
-  filter: brightness(0.98);
+  background-color: #ffffff !important;
 }
 
 .row-delete-btn {
@@ -188,12 +173,7 @@ button.search-btn:hover {
   font-size: 0.7rem;
 }
 
-.row-delete-btn:hover {
-  background: var(--danger);
-  color: white;
-}
-
-/* Temporary Alert/Toast */
+/* Toast */
 .toast-container {
   position: fixed;
   top: 20px;
@@ -205,9 +185,9 @@ button.search-btn:hover {
 .toast {
   background: #334155;
   color: white;
-  padding: 12px 24px;
-  border-radius: 30px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+  padding: 8px 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   animation: fadeInOut 3s forwards;
 }
 

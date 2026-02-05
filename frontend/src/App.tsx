@@ -163,12 +163,12 @@ function App() {
                 </div>
             </div>
 
-            <div className="results-window">
+            <div className="results-window" id="results-viewport">
                 <table className="results-table">
-                    <tbody>
+                    <tbody className="zebra-body">
                         {results.map((street) => (
-                            <tr key={street.id}>
-                                <td>
+                            <tr key={street.id} className="result-row">
+                                <td className="street-info">
                                     <strong>{street.street_name}</strong> | {street.neighborhood} | {street.city} | {street.type} | {street.zip_code}
                                 </td>
                                 <td style={{ textAlign: 'left', width: '60px' }}>
@@ -179,7 +179,7 @@ function App() {
                     </tbody>
                 </table>
                 {results.length === 0 && !loading && (
-                    <div style={{ textAlign: 'center', padding: '1rem', color: '#94a3b8', fontSize: '0.9rem' }}>
+                    <div style={{ textAlign: 'center', padding: '0.75rem', color: '#94a3b8', fontSize: '0.85rem' }}>
                         אין נתונים להצגה. בצע חיפוש.
                     </div>
                 )}
