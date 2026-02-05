@@ -62,13 +62,12 @@ function App() {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Basic check for file type
         const fileName = file.name.toLowerCase();
         const isCompatible = fileName.endsWith('.csv') || fileName.endsWith('.txt') || file.type === 'text/csv' || file.type === 'text/plain';
 
         if (!isCompatible) {
             setUploadStatus('סוג הקובץ אינו מתאים. אנא העלה קובץ טקסט/CSV.');
-            fileInputRef.current!.value = ''; // Reset
+            fileInputRef.current!.value = '';
             return;
         }
 
@@ -92,7 +91,7 @@ function App() {
             setUploadStatus('שגיאה בתקשורת עם השרת');
         } finally {
             setUploading(false);
-            fileInputRef.current!.value = ''; // Reset for next upload
+            fileInputRef.current!.value = '';
         }
     };
 
@@ -108,44 +107,47 @@ function App() {
                 <h1>חיפוש רחובות - באר שבע</h1>
             </header>
 
-            <div className="action-bar">
-                <div className="search-input-wrapper">
-                    <input
-                        type="text"
-                        placeholder="הכנס שם רחוב לחיפוש..."
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                    />
+            {/* Separate Box for Upload */}
+            <div className="section-box">
+                <span className="section-title">העלאת נתונים</span>
+                <div className="upload-row">
+                    <div className="upload-input-group">
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            style={{ display: 'none' }}
+                            onChange={handleFileChange}
+                        />
+                        <button
+                            className="btn btn-secondary"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploading}
+                        >
+                            {uploading ? 'מעלה...' : 'בחר קובץ להעלאה'}
+                        </button>
+                    </div>
+                    {uploadStatus && <span className="status-text">{uploadStatus}</span>}
                 </div>
-
-                <button
-                    className="btn btn-primary"
-                    onClick={handleSearch}
-                    disabled={loading}
-                >
-                    {loading ? 'מחפש...' : 'חיפוש'}
-                </button>
-
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    className="file-input-hidden"
-                    onChange={handleFileChange}
-                />
-
-                <button
-                    className="btn btn-secondary"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploading}
-                >
-                    {uploading ? 'מעלה...' : 'העלאת קובץ'}
-                </button>
             </div>
 
-            {uploadStatus && <p className="status-text">{uploadStatus}</p>}
+            {/* Separate Box for Search */}
+            <div className="section-box">
+                <span className="section-title">חיפוש רחובות</span>
+                <div className="search-row">
+                    <div className="search-input-wrapper">
+                        <input
+                            type="text"
+                            placeholder="הכנס שם רחוב..."
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                        />
+                    </div>
+                    <button className="btn btn-primary" onClick={handleSearch} disabled={loading}>
+                        {loading ? 'מחפש...' : 'חיפוש'}
+                    </button>
+                </div>
 
-            <div className="radio-group-container">
                 <div className="radio-group">
                     <label className="radio-option">
                         <input
@@ -180,15 +182,18 @@ function App() {
                 </div>
             </div>
 
-            <div className="results-window" id="results-viewport">
+            {/* Results Window */}
+            <div className="results-window">
                 <table className="results-table">
-                    <tbody className="zebra-body">
+                    <tbody>
                         {results.map((street) => (
-                            <tr key={street.id} className="result-row">
-                                <td className="street-info">
-                                    <strong>{street.street_name}</strong> | {street.neighborhood} | {street.city} | {street.type} | {street.zip_code}
-                                </td>
-                                <td style={{ textAlign: 'left', width: '60px' }}>
+                            <tr key={street.id}>
+                                <td className="col-name">{street.street_name}</td>
+                                <td className="col-neighborhood">{street.neighborhood}</td>
+                                <td className="col-city">{street.city}</td>
+                                <td className="col-type">{street.type}</td>
+                                <td className="col-zip">{street.zip_code}</td>
+                                <td className="col-action">
                                     <button className="row-delete-btn" onClick={() => handleDelete(street.id)}>מחק</button>
                                 </td>
                             </tr>
@@ -196,7 +201,7 @@ function App() {
                     </tbody>
                 </table>
                 {results.length === 0 && !loading && (
-                    <div style={{ textAlign: 'center', padding: '0.75rem', color: '#94a3b8', fontSize: '0.85rem' }}>
+                    <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
                         אין נתונים להצגה. בצע חיפוש.
                     </div>
                 )}
