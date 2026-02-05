@@ -61,7 +61,13 @@ The Backend service exposes the following endpoints:
 
 ## 🧪 Testing
 The project includes unit tests for core services (e.g., Elasticsearch connectivity, data processing).
-To run tests locally:
+
+### Run via Docker (Recommended)
+```bash
+docker-compose run --rm backend npm test
+```
+
+### Run Locally
 ```bash
 cd backend
 npm test
