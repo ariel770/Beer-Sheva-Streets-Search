@@ -26,7 +26,31 @@ function App() {
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [toast, setToast] = useState<{ show: boolean, msg: string }>({ show: false, msg: '' });
+    const [suggestions, setSuggestions] = useState<Array<{ id: string, street_name: string, neighborhood: string }>>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Debounced autocomplete
+    useEffect(() => {
+        if (query.length < 2) {
+            setSuggestions([]);
+            setShowSuggestions(false);
+            return;
+        }
+
+        const timer = setTimeout(async () => {
+            try {
+                const response = await fetch(`/api/autocomplete?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                setSuggestions(data);
+                setShowSuggestions(data.length > 0);
+            } catch (error) {
+                console.error('Autocomplete error:', error);
+            }
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [query]);
 
     const showMessage = (msg: string) => {
         setToast({ show: true, msg });
@@ -148,13 +172,36 @@ function App() {
                 <form className="search-box-unified" onSubmit={handleSearch}>
                     <div className="input-integrated-group">
                         <span className="search-icon-fixed">🔍</span>
-                        <input
-                            type="text"
-                            className="unified-input"
-                            placeholder="הקלד שם רחוב או שכונה לחיפוש..."
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                        />
+                        <div className="autocomplete-wrapper">
+                            <input
+                                type="text"
+                                className="unified-input"
+                                placeholder="הקלד שם רחוב או שכונה לחיפוש..."
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                onFocus={() => setShowSuggestions(suggestions.length > 0)}
+                                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                            />
+                            {showSuggestions && (
+                                <div className="autocomplete-dropdown">
+                                    {suggestions.map((suggestion) => (
+                                        <div
+                                            key={suggestion.id}
+                                            className="autocomplete-item"
+                                            onMouseDown={() => {
+                                                setQuery(suggestion.street_name);
+                                                setShowSuggestions(false);
+                                            }}
+                                        >
+                                            <span className="suggestion-name">{suggestion.street_name}</span>
+                                            {suggestion.neighborhood && (
+                                                <span className="suggestion-neighborhood">{suggestion.neighborhood}</span>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                         <button type="submit" className="unified-btn" disabled={loading}>
                             {loading ? '...' : 'חיפוש'}
                         </button>

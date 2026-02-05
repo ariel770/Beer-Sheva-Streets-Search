@@ -73,6 +73,31 @@ export class ElasticSearchService {
         });
     }
 
+    async autocomplete(query: string) {
+        const response = await esClient.search({
+            index: this.indexName,
+            body: {
+                query: {
+                    bool: {
+                        must: [
+                            {
+                                prefix: {
+                                    'street_name.keyword': query
+                                }
+                            }
+                        ],
+                        must_not: [
+                            { term: { is_deleted: true } }
+                        ]
+                    }
+                },
+                size: 10,
+                _source: ['street_name', 'neighborhood']
+            }
+        });
+        return response.hits.hits;
+    }
+
     async bulkIndex(records: any[], refresh: boolean = true) {
         const body = records.flatMap(doc => {
             const action = { index: { _index: this.indexName } } as any;

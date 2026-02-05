@@ -25,6 +25,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 const csvPath = path.resolve(__dirname, '../../data/streets.csv');
 
 app.get('/api/search', (req: any, res: any) => searchController.search(req, res));
+app.get('/api/autocomplete', (req: any, res: any) => searchController.autocomplete(req, res));
 app.delete('/api/streets/:id', (req: any, res: any) => searchController.deleteRecord(req, res));
 app.post('/api/streets/upload', upload.single('file'), (req: any, res: any) => uploadController.uploadCsv(req, res));
 app.delete('/api/streets', (req: any, res: any) => uploadController.clearAll(req, res));
