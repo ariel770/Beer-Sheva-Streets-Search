@@ -28,9 +28,23 @@ body {
   padding: 1.5rem;
 }
 
-header {
-  margin-bottom: 1.5rem;
-  text-align: center;
+.header-upload-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.header-upload-row h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--primary);
+}
+
+.upload-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .section-box {

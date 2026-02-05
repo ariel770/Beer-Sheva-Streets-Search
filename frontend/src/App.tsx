@@ -122,27 +122,25 @@ function App() {
                 )}
             </div>
 
-            <header>
-                <h1>חיפוש רחובות - באר שבע</h1>
-            </header>
-
-            {/* Upload Box correctly ABOVE search box */}
+            {/* Header + Upload Aligned */}
             <div className="section-box">
-                <span className="section-title">העלאת נתונים</span>
-                <div className="upload-row">
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        style={{ display: 'none' }}
-                        onChange={handleFileChange}
-                    />
-                    <button
-                        className="btn btn-secondary"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={uploading}
-                    >
-                        {uploading ? 'מעלה...' : 'בחר קובץ להעלאה'}
-                    </button>
+                <div className="header-upload-row">
+                    <h1>חיפוש רחובות - באר שבע</h1>
+                    <div className="upload-actions">
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            style={{ display: 'none' }}
+                            onChange={handleFileChange}
+                        />
+                        <button
+                            className="btn btn-secondary"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploading}
+                        >
+                            {uploading ? 'מעלה...' : 'בחר קובץ להעלאה'}
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -153,7 +151,7 @@ function App() {
                     <div className="search-input-wrapper">
                         <input
                             type="text"
-                            placeholder="הכנס שם רחוב (לדוגמא: אוסישקין)..."
+                            placeholder="הכנס שם רחוב..."
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
