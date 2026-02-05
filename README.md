@@ -2,6 +2,14 @@
 
 A high-performance street search system for the city of Beer Sheva, powered by Elasticsearch. Features include fast CSV data uploading, streaming processing, and advanced search capabilities.
 
+## ⚡ Key Features & Optimizations
+- **Fast Parsing**: Uses Node.js Streams to process large CSV files without loading the entire file into memory.
+- **Bulk Indexing**: Writes to Elasticsearch in optimized batches to minimize network overhead and indexing time.
+- **Zebra Striped UI**: Compact list view with alternate row colors (Light Green/White) for better readability.
+- **RTL Support**: Full Right-to-Left support for Hebrew interface.
+- **CI/CD Ready**: Automated GitHub Actions pipeline for quality assurance.
+- **Type Safety**: Fully written in TypeScript for both Frontend and Backend.
+
 ## 🏗️ Architecture
 - **Frontend**: React + Vite + TypeScript (Port 3000)
 - **Backend**: Node.js + Express + TypeScript (Port 4000)
@@ -82,13 +90,3 @@ helm upgrade --install beer-sheva-streets ./helm/beer-sheva-streets
 ```bash
 minikube service beer-sheva-streets-frontend --url
 ```
-
----
-
-## ⚡ Key Features & Optimizations
-- **Fast Parsing**: Uses Node.js Streams to process large CSV files without loading the entire file into memory.
-- **Bulk Indexing**: Writes to Elasticsearch in optimized batches to minimize network overhead and indexing time.
-- **Zebra Striped UI**: Compact list view with alternate row colors (Light Green/White) for better readability.
-- **RTL Support**: Full Right-to-Left support for Hebrew interface.
-- **CI/CD Ready**: Automated GitHub Actions pipeline for quality assurance.
-- **Type Safety**: Fully written in TypeScript for both Frontend and Backend.
