@@ -25,52 +25,44 @@ body {
 #root {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 header {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   text-align: center;
 }
 
-/* Boxes for separate sections */
 .section-box {
   background: var(--card-bg);
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   border: 1px solid var(--border);
 }
 
 .section-title {
   font-size: 1.1rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   color: var(--primary);
   display: block;
 }
 
-/* Upload Box Specifics: Button to the left */
+/* Upload Row: Button to left */
 .upload-row {
   display: flex;
-  justify-content: space-between;
-  /* Pushes button to the left in RTL */
+  justify-content: flex-end;
+  /* Button on left in RTL */
   align-items: center;
-  gap: 1rem;
 }
 
-.upload-input-group {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-/* Search Box Specifics */
+/* Search Box Layout */
 .search-row {
   display: flex;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .search-input-wrapper {
@@ -79,7 +71,7 @@ header {
 
 .search-input-wrapper input {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.7rem 1rem;
   border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 1rem;
@@ -87,29 +79,19 @@ header {
   box-sizing: border-box;
 }
 
-.search-input-wrapper input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
-}
-
 .btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.7rem 1.5rem;
   border: none;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s;
-  font-size: 1rem;
 }
 
 .btn-primary {
   background-color: var(--primary);
   color: white;
-}
-
-.btn-primary:hover {
-  background-color: var(--primary-hover);
 }
 
 .btn-secondary {
@@ -118,67 +100,52 @@ header {
   border: 1px solid var(--primary);
 }
 
-.btn-secondary:hover {
-  background-color: #f5f3ff;
-}
-
-.btn:disabled {
-  background-color: var(--text-muted);
-  cursor: not-allowed;
-  color: white;
-}
-
-/* Radio Group */
 .radio-group {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .radio-option {
   display: flex;
   align-items: center;
   gap: 1rem;
-  cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
-.radio-option input[type="radio"] {
-  transform: scale(1.6);
-  margin: 0 5px;
+/* Table Headers */
+.results-table thead th {
+  background: #f1f5f9;
+  text-align: right;
+  padding: 10px 15px;
+  font-weight: 800;
+  color: var(--text-main);
+  border-bottom: 2px solid var(--border);
 }
 
-/* Results Window: Extended height */
+/* Results Window: Slightly smaller height to prevent overflow on typical screens */
 .results-window {
   background: var(--card-bg);
   border-radius: 12px;
   box-shadow: var(--shadow);
-  height: 450px;
-  /* Extended height as requested */
+  height: 380px;
+  /* Reduced to avoid overflow */
   overflow-y: auto;
   border: 1px solid var(--border);
-  margin-top: 1rem;
 }
 
 .results-table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  /* Keep columns aligned */
-}
-
-.results-table thead {
-  display: none !important;
 }
 
 .results-table td {
-  padding: 12px 15px;
+  padding: 10px 15px;
   border-bottom: 1px solid var(--border);
-  font-size: 1rem;
-  vertical-align: middle;
+  font-size: 0.95rem;
 }
 
-/* Fixed column widths for clarity */
 .col-name {
   width: 30%;
   font-weight: bold;
@@ -213,10 +180,6 @@ header {
   background-color: #ffffff !important;
 }
 
-.results-table tr:hover {
-  filter: brightness(0.97);
-}
-
 .row-delete-btn {
   padding: 4px 8px;
   background: transparent;
@@ -224,28 +187,22 @@ header {
   border: 1px solid var(--danger);
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.8rem;
 }
 
-.row-delete-btn:hover {
-  background: var(--danger);
-  color: white;
+/* Toast with blue for success */
+.toast-success {
+  background: #059669 !important;
 }
 
-.status-text {
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-  color: var(--primary);
-  font-weight: 500;
-}
-
-/* Toast */
 .toast-container {
   position: fixed;
   top: 30px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .toast {
@@ -256,6 +213,8 @@ header {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   animation: fadeInOut 3s forwards;
   font-weight: 500;
+  min-width: 250px;
+  text-align: center;
 }
 
 @keyframes fadeInOut {

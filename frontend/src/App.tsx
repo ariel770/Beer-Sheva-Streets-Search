@@ -15,8 +15,9 @@ function App() {
     const [results, setResults] = useState<Street[]>([]);
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
-    const [uploadStatus, setUploadStatus] = useState<string>('');
     const [showNoResultsToast, setShowNoResultsToast] = useState(false);
+    const [showSuccessToast, setShowSuccessToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleSearch = async () => {
@@ -29,6 +30,7 @@ function App() {
             setResults(data);
 
             if (data.length === 0) {
+                setToastMessage('לא נמצאו תוצאות לחיפוש שלך');
                 setShowNoResultsToast(true);
             }
         } catch (error) {
@@ -38,14 +40,16 @@ function App() {
         }
     };
 
+    // Auto-hide toasts
     useEffect(() => {
-        if (showNoResultsToast) {
+        if (showNoResultsToast || showSuccessToast) {
             const timer = setTimeout(() => {
                 setShowNoResultsToast(false);
+                setShowSuccessToast(false);
             }, 3000);
             return () => clearTimeout(timer);
         }
-    }, [showNoResultsToast]);
+    }, [showNoResultsToast, showSuccessToast]);
 
     const handleDelete = async (id: string) => {
         try {
@@ -66,13 +70,13 @@ function App() {
         const isCompatible = fileName.endsWith('.csv') || fileName.endsWith('.txt') || file.type === 'text/csv' || file.type === 'text/plain';
 
         if (!isCompatible) {
-            setUploadStatus('סוג הקובץ אינו מתאים. אנא העלה קובץ טקסט/CSV.');
+            setToastMessage('סוג הקובץ אינו מתאים (CSV/TXT בלבד)');
+            setShowNoResultsToast(true); // Re-using "warning" toast behavior
             fileInputRef.current!.value = '';
             return;
         }
 
         setUploading(true);
-        setUploadStatus('מעלה...');
         const formData = new FormData();
         formData.append('file', file);
 
@@ -82,13 +86,16 @@ function App() {
                 body: formData,
             });
             if (response.ok) {
-                setUploadStatus('הקובץ הועלה בהצלחה!');
+                setToastMessage('הקובץ הועלה בהצלחה!');
+                setShowSuccessToast(true);
             } else {
-                setUploadStatus('שגיאה בעיבוד הקובץ בשרת');
+                setToastMessage('שגיאה בעיבוד הקובץ');
+                setShowNoResultsToast(true);
             }
         } catch (error) {
             console.error('Upload failed:', error);
-            setUploadStatus('שגיאה בתקשורת עם השרת');
+            setToastMessage('שגיאה בתקשורת עם השרת');
+            setShowNoResultsToast(true);
         } finally {
             setUploading(false);
             fileInputRef.current!.value = '';
@@ -97,40 +104,41 @@ function App() {
 
     return (
         <div className="container">
-            {showNoResultsToast && (
-                <div className="toast-container">
-                    <div className="toast">לא נמצאו תוצאות לחיפוש שלך</div>
-                </div>
-            )}
+            {/* Toast Notifications */}
+            <div className="toast-container">
+                {showNoResultsToast && (
+                    <div className="toast">{toastMessage}</div>
+                )}
+                {showSuccessToast && (
+                    <div className="toast toast-success">{toastMessage}</div>
+                )}
+            </div>
 
             <header>
                 <h1>חיפוש רחובות - באר שבע</h1>
             </header>
 
-            {/* Separate Box for Upload */}
+            {/* Upload Box correctly ABOVE search box */}
             <div className="section-box">
                 <span className="section-title">העלאת נתונים</span>
                 <div className="upload-row">
-                    <div className="upload-input-group">
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            style={{ display: 'none' }}
-                            onChange={handleFileChange}
-                        />
-                        <button
-                            className="btn btn-secondary"
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={uploading}
-                        >
-                            {uploading ? 'מעלה...' : 'בחר קובץ להעלאה'}
-                        </button>
-                    </div>
-                    {uploadStatus && <span className="status-text">{uploadStatus}</span>}
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                    />
+                    <button
+                        className="btn btn-secondary"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploading}
+                    >
+                        {uploading ? 'מעלה...' : 'בחר קובץ להעלאה'}
+                    </button>
                 </div>
             </div>
 
-            {/* Separate Box for Search */}
+            {/* Search Box */}
             <div className="section-box">
                 <span className="section-title">חיפוש רחובות</span>
                 <div className="search-row">
@@ -150,33 +158,15 @@ function App() {
 
                 <div className="radio-group">
                     <label className="radio-option">
-                        <input
-                            type="radio"
-                            name="searchType"
-                            value="free"
-                            checked={searchType === 'free'}
-                            onChange={() => setSearchType('free')}
-                        />
+                        <input type="radio" name="searchType" value="free" checked={searchType === 'free'} onChange={() => setSearchType('free')} />
                         חיפוש חופשי (שם ראשי)
                     </label>
                     <label className="radio-option">
-                        <input
-                            type="radio"
-                            name="searchType"
-                            value="at-least-one"
-                            checked={searchType === 'at-least-one'}
-                            onChange={() => setSearchType('at-least-one')}
-                        />
+                        <input type="radio" name="searchType" value="at-least-one" checked={searchType === 'at-least-one'} onChange={() => setSearchType('at-least-one')} />
                         חיפוש לפחות מילה אחת בכל השדות
                     </label>
                     <label className="radio-option">
-                        <input
-                            type="radio"
-                            name="searchType"
-                            value="full-phrase"
-                            checked={searchType === 'full-phrase'}
-                            onChange={() => setSearchType('full-phrase')}
-                        />
+                        <input type="radio" name="searchType" value="full-phrase" checked={searchType === 'full-phrase'} onChange={() => setSearchType('full-phrase')} />
                         חיפוש ביטוי שלם בכל השדות
                     </label>
                 </div>
@@ -185,6 +175,18 @@ function App() {
             {/* Results Window */}
             <div className="results-window">
                 <table className="results-table">
+                    {results.length > 0 && (
+                        <thead>
+                            <tr>
+                                <th className="col-name">שם רחוב</th>
+                                <th className="col-neighborhood">שכונה</th>
+                                <th className="col-city">עיר</th>
+                                <th className="col-type">סוג</th>
+                                <th className="col-zip">מיקוד</th>
+                                <th className="col-action"></th>
+                            </tr>
+                        </thead>
+                    )}
                     <tbody>
                         {results.map((street) => (
                             <tr key={street.id}>
