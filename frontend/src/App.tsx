@@ -203,6 +203,15 @@ function App() {
                                 </div>
 
                                 <div className="card-footer">
+                                    <a
+                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(street.street_name + ' באר שבע')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="btn-map"
+                                    >
+                                        <span>📍 מפה</span>
+                                    </a>
+
                                     <button
                                         className="btn-delete"
                                         onClick={() => handleDelete(street.id)}

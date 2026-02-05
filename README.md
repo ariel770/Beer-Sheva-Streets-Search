@@ -3,12 +3,12 @@
 A high-performance street search system for the city of Beer Sheva, powered by Elasticsearch. Features include fast CSV data uploading, streaming processing, and advanced search capabilities.
 
 ## ⚡ Key Features & Optimizations
-- **High-Throughput Data Ingestion**: Engineered for large datasets using Node.js Streams and Elasticsearch Bulk API to process millions of records with minimal memory footprint and zero duplicate entries.
-- **Microservices Orchestration**: Fully containerized architecture (Docker/K8s) ensuring portability and scalability across any cloud or local environment.
-- **Production Ready Infrastructure**: Includes Helm Charts for Kubernetes, automated CI/CD pipelines (GitHub Actions), and comprehensive unit testing.
-- **Optimized Full-Text Search**: Leverages Elasticsearch for millisecond-latency queries over complex Hebrew datasets.
-- **Modern Localized UI**: Fast, responsive, and fully Right-to-Left (RTL) enabled React interface.
-- **Enterprise Grade Quality**: Built with TypeScript for end-to-end type safety and maintainability.
+- **High-Throughput Data Ingestion**: Optimized CSV processing for large datasets.
+- **Enterprise-Grade Search**: Multi-modal search logic (Free, Exact, Phrase) powered by Elasticsearch.
+- **Modern Dashboard UI**: Clean Navy/Enterprise design with card-based results, skeleton loaders, and smooth animations.
+- **📍 Google Maps Integration**: Real-time location verification for search results (added for enhanced UX).
+- **Resilient Infrastructure**: Containerized microservices with Helm support and automated CI/CD.
+- **Quality Assured**: Comprehensive search verification suite.
 
 ## 🏗️ Architecture
 - **Frontend**: React + Vite + TypeScript (Port 3000)
@@ -59,19 +59,18 @@ The Backend service exposes the following endpoints:
 
 ---
 
-## 🧪 Testing
-The project includes unit tests for core services (e.g., Elasticsearch connectivity, data processing).
+## 🧪 Testing & Verification
+### Search Logic Scenarios
+1. **Free Search (Principal Name)**: Searching "אוסקר" returns the match. Searching "הסטוריה" returns no results (since it's in the group field).
+2. **Exact Search (Deep Field)**: Searching "הסטוריה" returns "ד. הסטוריה יהודית" and related records (Ausishkin, Borochov).
+3. **Phrase Search (Full Expression)**: Searching "יקירי העיר" returns records like "טוביהו". Searching just "יקירי" returns no results (enforces full phrase semantics).
 
-### Run via Docker (Recommended)
-```bash
-docker-compose run --rm backend npm test
-```
+### UI/UX Validations
+- **Google Maps Integration**: Each card features a 📍 button that deep-links to the street location in Beer Sheva.
+- **Micro-Animations**: Experience smooth fade-out effects on record deletion and shimmer effects during data fetching.
 
-### Run Locally
-```bash
-cd backend
-npm test
-```
+## 🧪 Running Tests
+The project includes unit tests for core services.
 
 ## 🚀 CI/CD Pipeline
 A GitHub Actions pipeline is configured in `.github/workflows/ci.yml`. It automatically:
