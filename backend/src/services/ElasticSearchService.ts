@@ -81,8 +81,11 @@ export class ElasticSearchService {
                     bool: {
                         must: [
                             {
-                                prefix: {
-                                    'street_name.keyword': query
+                                match_phrase_prefix: {
+                                    street_name: {
+                                        query: query,
+                                        max_expansions: 10
+                                    }
                                 }
                             }
                         ],

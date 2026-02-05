@@ -95,3 +95,25 @@ helm upgrade --install beer-sheva-streets ./helm/beer-sheva-streets
 ```bash
 minikube service beer-sheva-streets-frontend --url
 ```
+
+---
+
+## הוראות הרצה בעברית 🇮🇱
+
+כדי להריץ את הפרויקט בצורה מלאה (Frontend + Backend + Database), בצע את הפקודות הבאות בטרמינל:
+
+1. היכנס לתיקיית הפרויקט:
+```bash
+cd beer-sheva-streets
+```
+
+2. הרץ את הפרויקט באמצעות Docker Compose:
+```bash
+docker-compose up -d --build
+```
+הדגל `-d` מריץ את השירותים ברקע (detached mode) והדגל `--build` מוודא שהם נבנים מחדש עם השינויים האחרונים.
+
+לאחר שהשירותים עולים (יכול לקחת דקה או שתיים בהרצה ראשונה):
+- **Frontend**: זמין בכתובת [http://localhost:3000](http://localhost:3000)
+- **Backend API**: זמין בכתובת [http://localhost:4000](http://localhost:4000)
+

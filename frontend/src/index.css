@@ -381,17 +381,17 @@ body {
 }
 
 .autocomplete-item:hover {
-  background-color: var(--bg);
+  background-color: var(--bg-main);
 }
 
 .suggestion-name {
   font-weight: 500;
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .suggestion-neighborhood {
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin-right: 0.5rem;
 }
 
