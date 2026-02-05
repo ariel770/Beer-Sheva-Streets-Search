@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 interface Street {
     id: string;
@@ -15,9 +15,9 @@ function App() {
     const [results, setResults] = useState<Street[]>([]);
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
-    const [file, setFile] = useState<File | null>(null);
     const [uploadStatus, setUploadStatus] = useState<string>('');
     const [showNoResultsToast, setShowNoResultsToast] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleSearch = async () => {
         if (!query.trim()) return;
@@ -38,7 +38,6 @@ function App() {
         }
     };
 
-    // Auto-hide toast after 3 seconds
     useEffect(() => {
         if (showNoResultsToast) {
             const timer = setTimeout(() => {
@@ -59,10 +58,22 @@ function App() {
         }
     };
 
-    const handleUpload = async () => {
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
         if (!file) return;
+
+        // Basic check for file type
+        const fileName = file.name.toLowerCase();
+        const isCompatible = fileName.endsWith('.csv') || fileName.endsWith('.txt') || file.type === 'text/csv' || file.type === 'text/plain';
+
+        if (!isCompatible) {
+            setUploadStatus('סוג הקובץ אינו מתאים. אנא העלה קובץ טקסט/CSV.');
+            fileInputRef.current!.value = ''; // Reset
+            return;
+        }
+
         setUploading(true);
-        setUploadStatus('');
+        setUploadStatus('מעלה...');
         const formData = new FormData();
         formData.append('file', file);
 
@@ -72,15 +83,16 @@ function App() {
                 body: formData,
             });
             if (response.ok) {
-                setUploadStatus('הקובץ הועלה ונשמר בהצלחה!');
+                setUploadStatus('הקובץ הועלה בהצלחה!');
             } else {
-                setUploadStatus('שגיאה בהעלאת הקובץ');
+                setUploadStatus('שגיאה בעיבוד הקובץ בשרת');
             }
         } catch (error) {
             console.error('Upload failed:', error);
             setUploadStatus('שגיאה בתקשורת עם השרת');
         } finally {
             setUploading(false);
+            fileInputRef.current!.value = ''; // Reset for next upload
         }
     };
 
@@ -96,39 +108,44 @@ function App() {
                 <h1>חיפוש רחובות - באר שבע</h1>
             </header>
 
-            <div className="upload-section">
-                <h3>העלאת קובץ רחובות (CSV)</h3>
-                <div className="upload-controls">
-                    <input
-                        type="file"
-                        accept=".csv"
-                        onChange={(e) => setFile(e.target.files?.[0] || null)}
-                    />
-                    <button
-                        onClick={handleUpload}
-                        disabled={!file || uploading}
-                        className="upload-btn"
-                    >
-                        {uploading ? 'מעלה...' : 'העלאת קובץ'}
-                    </button>
-                </div>
-                {uploadStatus && <p className="upload-status">{uploadStatus}</p>}
-            </div>
-
-            <div className="search-container">
-                <div className="search-field">
+            <div className="action-bar">
+                <div className="search-input-wrapper">
                     <input
                         type="text"
-                        placeholder="הכנס שם רחוב..."
+                        placeholder="הכנס שם רחוב לחיפוש..."
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     />
-                    <button className="search-btn" onClick={handleSearch} disabled={loading}>
-                        {loading ? 'מחפש...' : 'חיפוש'}
-                    </button>
                 </div>
 
+                <button
+                    className="btn btn-primary"
+                    onClick={handleSearch}
+                    disabled={loading}
+                >
+                    {loading ? 'מחפש...' : 'חיפוש'}
+                </button>
+
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="file-input-hidden"
+                    onChange={handleFileChange}
+                />
+
+                <button
+                    className="btn btn-secondary"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                >
+                    {uploading ? 'מעלה...' : 'העלאת קובץ'}
+                </button>
+            </div>
+
+            {uploadStatus && <p className="status-text">{uploadStatus}</p>}
+
+            <div className="radio-group-container">
                 <div className="radio-group">
                     <label className="radio-option">
                         <input
