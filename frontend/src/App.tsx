@@ -40,7 +40,7 @@ function App() {
         // Reset state
         setResults([]);
 
-        let skeletonTimeout: NodeJS.Timeout | null = null;
+        let skeletonTimeout: any = null;
 
         // Only show loading if it takes more than 300ms
         skeletonTimeout = setTimeout(() => {
