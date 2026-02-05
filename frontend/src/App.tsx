@@ -93,7 +93,7 @@ function App() {
             )}
 
             <header>
-                <h1>חיפוש רחובות - באר שבע V2</h1>
+                <h1>חיפוש רחובות - באר שבע</h1>
             </header>
 
             <div className="upload-section">
