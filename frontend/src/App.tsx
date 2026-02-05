@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 interface Street {
     id: string;
@@ -10,10 +10,10 @@ interface Street {
     street_code?: string;
 }
 
-const SkeletonLoader = () => (
+const ShimmerLoader = () => (
     <div className="results-grid">
         {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="skeleton-card" />
+            <div key={i} className="skeleton-box" />
         ))}
     </div>
 );
@@ -24,7 +24,14 @@ function App() {
     const [results, setResults] = useState<Street[]>([]);
     const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
     const [loading, setLoading] = useState(false);
-    const [showToast, setShowToast] = useState<{ show: boolean, msg: string }>({ show: false, msg: '' });
+    const [uploading, setUploading] = useState(false);
+    const [toast, setToast] = useState<{ show: boolean, msg: string }>({ show: false, msg: '' });
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const showMessage = (msg: string) => {
+        setToast({ show: true, msg });
+        setTimeout(() => setToast({ show: false, msg: '' }), 3000);
+    };
 
     const handleSearch = async () => {
         if (!query.trim()) return;
@@ -34,29 +41,48 @@ function App() {
             const data = await response.json();
             setResults(data);
             if (data.length === 0) {
-                triggerToast('לא נמצאו תוצאות לחיפוש שלך');
+                showMessage('לא נמצאו תוצאות לחיפוש שלך');
             }
         } catch (error) {
-            console.error('Search failed:', error);
-            triggerToast('שגיאה בחיפוש הנתונים');
+            console.error('Search error:', error);
+            showMessage('שגיאה בביצוע החיפוש');
         } finally {
             setLoading(false);
         }
     };
 
-    const triggerToast = (msg: string) => {
-        setShowToast({ show: true, msg });
-        setTimeout(() => setShowToast({ show: false, msg: '' }), 3000);
+    const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await fetch('/api/streets/upload', {
+                method: 'POST',
+                body: formData,
+            });
+            if (response.ok) {
+                showMessage('הקובץ הועלה בהצלחה!');
+            } else {
+                showMessage('שגיאה בהעלאת הקובץ');
+            }
+        } catch (error) {
+            showMessage('שגיאה בתקשורת עם השרת');
+        } finally {
+            setUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }
     };
 
     const handleDelete = async (id: string) => {
-        // Start animation
         setDeletingIds(prev => new Set(prev).add(id));
 
         try {
             const response = await fetch(`/api/streets/${id}`, { method: 'DELETE' });
             if (response.ok) {
-                // Wait for animation to finish then remove from state
                 setTimeout(() => {
                     setResults(prev => prev.filter(r => r.id !== id));
                     setDeletingIds(prev => {
@@ -64,9 +90,9 @@ function App() {
                         next.delete(id);
                         return next;
                     });
-                }, 500);
+                }, 400); // Wait for fade-out animation
             } else {
-                triggerToast('שגיאה במחיקת הרשומה');
+                showMessage('שגיאה במחיקת הרשומה');
                 setDeletingIds(prev => {
                     const next = new Set(prev);
                     next.delete(id);
@@ -74,104 +100,126 @@ function App() {
                 });
             }
         } catch (error) {
-            console.error('Delete failed:', error);
-            triggerToast('שגיאה בתקשורת עם השרת');
+            showMessage('שגיאה בחיבור לשרת');
         }
     };
 
     return (
-        <div className="dashboard">
-            {showToast.show && <div className="status-toast">{showToast.msg}</div>}
+        <div className="app-layout">
+            {toast.show && <div className="toast-bar"><span>✨ {toast.msg}</span></div>}
 
-            <header className="app-header">
-                <div className="search-container">
-                    <div className="search-input-group">
-                        <span className="search-icon">🔍</span>
+            <nav className="navbar">
+                <h1 className="navbar-title">חיפוש רחובות - באר שבע</h1>
+
+                <div className="top-actions">
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                        onChange={handleUpload}
+                    />
+                    <button
+                        className="btn-outline"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploading}
+                    >
+                        <span>{uploading ? 'מעלה...' : 'העלאת נתונים'}</span>
+                        <span>☁️</span>
+                    </button>
+                </div>
+            </nav>
+
+            <section className="search-hero">
+                <div className="search-box-unified">
+                    <div className="input-integrated-group">
+                        <span className="search-icon-fixed">🔍</span>
                         <input
                             type="text"
-                            className="main-search-input"
-                            placeholder="חפש רחוב, שכונה או מיקוד..."
+                            className="unified-input"
+                            placeholder="הקלד שם רחוב או שכונה לחיפוש..."
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                         />
-                        <button className="search-btn" onClick={handleSearch} disabled={loading}>
-                            חיפוש
+                        <button className="unified-btn" onClick={handleSearch} disabled={loading}>
+                            {loading ? '...' : 'חיפוש'}
                         </button>
                     </div>
 
-                    <div className="search-controls">
-                        <label className="radio-control">
-                            <input type="radio" name="searchType" value="free" checked={searchType === 'free'} onChange={() => setSearchType('free')} />
-                            חיפוש חופשי
+                    <div className="radio-row">
+                        <label className="radio-item">
+                            <input type="radio" value="free" checked={searchType === 'free'} onChange={() => setSearchType('free')} />
+                            <span>חיפוש חופשי</span>
                         </label>
-                        <label className="radio-control">
-                            <input type="radio" name="searchType" value="at-least-one" checked={searchType === 'at-least-one'} onChange={() => setSearchType('at-least-one')} />
-                            חיפוש מדויק
+                        <label className="radio-item">
+                            <input type="radio" value="at-least-one" checked={searchType === 'at-least-one'} onChange={() => setSearchType('at-least-one')} />
+                            <span>חיפוש מדויק</span>
                         </label>
-                        <label className="radio-control">
-                            <input type="radio" name="searchType" value="full-phrase" checked={searchType === 'full-phrase'} onChange={() => setSearchType('full-phrase')} />
-                            ביטוי שלם
+                        <label className="radio-item">
+                            <input type="radio" value="full-phrase" checked={searchType === 'full-phrase'} onChange={() => setSearchType('full-phrase')} />
+                            <span>ביטוי שלם</span>
                         </label>
                     </div>
                 </div>
-            </header>
+            </section>
 
-            <main>
+            <main className="results-container">
                 {loading ? (
-                    <SkeletonLoader />
+                    <ShimmerLoader />
                 ) : (
                     <div className="results-grid">
                         {results.map((street) => (
                             <div
                                 key={street.id}
-                                className={`street-card ${deletingIds.has(street.id) ? 'fade-out' : ''}`}
+                                className={`record-card ${deletingIds.has(street.id) ? 'fade-out' : ''}`}
                             >
-                                <div className="card-header">
-                                    <h3 className="street-name-title">{street.street_name}</h3>
+                                <h3 className="card-title">{street.street_name}</h3>
+
+                                <div className="card-fields-grid">
+                                    <div className="field-box">
+                                        <span className="label-text">שם רחוב</span>
+                                        <span className="value-text">{street.street_name}</span>
+                                    </div>
+                                    <div className="field-box">
+                                        <span className="label-text">קוד רחוב</span>
+                                        <span className="value-text">{street.street_code || 'ללא קוד'}</span>
+                                    </div>
+                                    <div className="field-box">
+                                        <span className="label-text">שכונה</span>
+                                        <span className="value-text">{street.neighborhood || 'כללית'}</span>
+                                    </div>
+                                    <div className="field-box">
+                                        <span className="label-text">סוג רחוב</span>
+                                        <span className="value-text">{street.type || 'רחוב'}</span>
+                                    </div>
+                                    <div className="field-box">
+                                        <span className="label-text">עיר</span>
+                                        <span className="value-text">{street.city}</span>
+                                    </div>
+                                    <div className="field-box">
+                                        <span className="label-text">מיקוד</span>
+                                        <span className="value-text">{street.zip_code || '---'}</span>
+                                    </div>
                                 </div>
-                                <div className="card-body">
-                                    <div className="field-group">
-                                        <span className="field-label">קוד רחוב</span>
-                                        <span className="field-value">{street.street_code || '---'}</span>
-                                    </div>
-                                    <div className="field-group">
-                                        <span className="field-label">שכונה</span>
-                                        <span className="field-value">{street.neighborhood || '---'}</span>
-                                    </div>
-                                    <div className="field-group">
-                                        <span className="field-label">סוג רחוב</span>
-                                        <span className="field-value">{street.type || '---'}</span>
-                                    </div>
-                                    <div className="field-group">
-                                        <span className="field-label">עיר</span>
-                                        <span className="field-value">{street.city}</span>
-                                    </div>
-                                    <div className="field-group">
-                                        <span className="field-label">מיקוד</span>
-                                        <span className="field-value">{street.zip_code || '---'}</span>
-                                    </div>
-                                    <div className="field-group">
-                                        <span className="field-label">מזהה מערכת</span>
-                                        <span className="field-value">{street.id.substring(0, 8)}</span>
-                                    </div>
-                                </div>
+
                                 <div className="card-footer">
                                     <button
-                                        className="delete-btn"
+                                        className="btn-delete"
                                         onClick={() => handleDelete(street.id)}
                                         disabled={deletingIds.has(street.id)}
                                     >
-                                        🗑️ מחיקה
+                                        <span>🗑️</span>
+                                        <span>מחיקה</span>
                                     </button>
                                 </div>
                             </div>
                         ))}
                     </div>
                 )}
+
                 {!loading && results.length === 0 && query && (
-                    <div style={{ textAlign: 'center', marginTop: '4rem', color: 'var(--text-secondary)' }}>
-                        לא תואמו תוצאות לחיפוש שלך.
+                    <div style={{ textAlign: 'center', padding: '4rem' }}>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>לא נמצאו רשומות תואמות.</p>
                     </div>
                 )}
             </main>
