@@ -9,6 +9,14 @@ interface Street {
     zip_code: string;
 }
 
+enum StreetFields {
+    NAME = 'שם רחוב',
+    NEIGHBORHOOD = 'שכונה',
+    CITY = 'עיר',
+    TYPE = 'סוג',
+    ZIP = 'מיקוד'
+}
+
 function App() {
     const [query, setQuery] = useState('');
     const [searchType, setSearchType] = useState('free');
@@ -145,7 +153,7 @@ function App() {
                     <div className="search-input-wrapper">
                         <input
                             type="text"
-                            placeholder="הכנס שם רחוב..."
+                            placeholder="הכנס שם רחוב (לדוגמא: אוסישקין)..."
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -178,11 +186,11 @@ function App() {
                     {results.length > 0 && (
                         <thead>
                             <tr>
-                                <th className="col-name">שם רחוב</th>
-                                <th className="col-neighborhood">שכונה</th>
-                                <th className="col-city">עיר</th>
-                                <th className="col-type">סוג</th>
-                                <th className="col-zip">מיקוד</th>
+                                <th className="col-name">{StreetFields.NAME}</th>
+                                <th className="col-neighborhood">{StreetFields.NEIGHBORHOOD}</th>
+                                <th className="col-city">{StreetFields.CITY}</th>
+                                <th className="col-type">{StreetFields.TYPE}</th>
+                                <th className="col-zip">{StreetFields.ZIP}</th>
                                 <th className="col-action"></th>
                             </tr>
                         </thead>
