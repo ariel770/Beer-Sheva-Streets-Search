@@ -237,8 +237,8 @@ function App() {
                                         </button>
                                     </div>
                                 </div>
-                            ))}
                         </div>
+                    )}
                 </div>
 
                 {!loading && results.length === 0 && query && (
