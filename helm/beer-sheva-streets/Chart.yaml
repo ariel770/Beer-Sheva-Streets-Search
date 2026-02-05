@@ -1,0 +1,6 @@
+apiVersion: v2
+name: beer-sheva-streets
+description: A Helm chart for Beer Sheva Streets search application
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

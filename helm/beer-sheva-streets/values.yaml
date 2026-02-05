@@ -1,0 +1,51 @@
+# Default values for beer-sheva-streets.
+# This is a YAML-formatted file.
+
+global:
+  domain: localhost
+
+elasticsearch:
+  image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+  port: 9200
+  serviceType: ClusterIP
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+
+backend:
+  replicaCount: 1
+  image:
+    repository: beer-sheva-streets-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 4000
+  env:
+    elasticsearchUrl: "http://elasticsearch:9200"
+    port: 4000
+
+frontend:
+  replicaCount: 1
+  image:
+    repository: beer-sheva-streets-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    port: 80
+    nodePort: 3000
+
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: beer-sheva.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
