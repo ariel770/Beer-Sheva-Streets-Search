@@ -51,23 +51,44 @@ The Backend service exposes the following endpoints:
 
 ---
 
-## ☸️ Helm & Kubernetes
-The project includes a Helm Chart for managing Kubernetes deployments.
-
-**Location:** `helm/beer-sheva-streets/`
-
-**Render Project Manifests (Configuration):**
+## 🧪 Testing
+The project includes unit tests for core services (e.g., Elasticsearch connectivity, data processing).
+To run tests locally:
 ```bash
-helm template beer-sheva-streets ./helm/beer-sheva-streets
+cd backend
+npm test
 ```
 
-You can customize environment settings (ports, memory limits, image tags, etc.) in the `values.yaml` file.
+## 🚀 CI/CD Pipeline
+A GitHub Actions pipeline is configured in `.github/workflows/ci.yml`. It automatically:
+1. Installs dependencies.
+2. Runs backend tests.
+3. Builds the frontend to ensure no build regressions.
+
+## ☸️ Kubernetes Deployment (Optional / Minikube)
+While Docker Compose is the primary way to run the app locally, a Helm chart is provided for Kubernetes environments.
+
+### 1. Start Minikube
+```bash
+minikube start
+```
+
+### 2. Deploy using Helm
+```bash
+helm upgrade --install beer-sheva-streets ./helm/beer-sheva-streets
+```
+
+### 3. Access the App
+```bash
+minikube service beer-sheva-streets-frontend --url
+```
 
 ---
 
 ## ⚡ Key Features & Optimizations
 - **Fast Parsing**: Uses Node.js Streams to process large CSV files without loading the entire file into memory.
 - **Bulk Indexing**: Writes to Elasticsearch in optimized batches to minimize network overhead and indexing time.
-- **Elasticsearch Optimization**: Controlled index refreshing for maximum ingestion speed.
-- **Clean Architecture**: Separated into Controllers, Services, and Configuration layers for easy maintenance and debugging.
+- **Zebra Striped UI**: Compact list view with alternate row colors (Light Green/White) for better readability.
+- **RTL Support**: Full Right-to-Left support for Hebrew interface.
+- **CI/CD Ready**: Automated GitHub Actions pipeline for quality assurance.
 - **Type Safety**: Fully written in TypeScript for both Frontend and Backend.

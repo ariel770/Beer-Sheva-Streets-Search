@@ -10,6 +10,8 @@
   --danger-hover: #dc2626;
   --radius: 12px;
   --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --row-alt: #f0fdf4;
+  /* Light Green for zebra stripes */
 }
 
 body {
@@ -19,7 +21,6 @@ body {
   color: var(--text-main);
   -webkit-font-smoothing: antialiased;
   direction: rtl;
-  /* Support Right-to-Left */
 }
 
 #root {
@@ -30,16 +31,16 @@ body {
 
 .upload-section {
   background: white;
-  padding: 1.5rem;
+  padding: 1rem;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   border: 1px dashed var(--primary);
 }
 
 .upload-section h3 {
-  margin: 0 0 1rem 0;
-  font-size: 1rem;
+  margin: 0 0 0.75rem 0;
+  font-size: 0.95rem;
   color: var(--text-main);
 }
 
@@ -65,14 +66,14 @@ body {
 }
 
 .upload-status {
-  margin-top: 1rem;
-  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
   color: var(--primary);
 }
 
 .search-container {
   background: var(--card-bg);
-  padding: 2rem;
+  padding: 1.5rem;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   margin-bottom: 1rem;
@@ -81,12 +82,12 @@ body {
 .search-field {
   display: flex;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 input[type="text"] {
   flex: 1;
-  padding: 0.75rem 1rem;
+  padding: 0.6rem 1rem;
   border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 1rem;
@@ -99,7 +100,7 @@ input[type="text"]:focus {
 }
 
 button.search-btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.6rem 1.5rem;
   background-color: var(--primary);
   color: white;
   border: none;
@@ -116,33 +117,31 @@ button.search-btn:hover {
 .radio-group {
   display: flex;
   flex-direction: column;
-  /* Vertical alignment */
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .radio-option {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
   cursor: pointer;
   font-size: 1.1rem;
   color: var(--text-main);
 }
 
-/* Double sized radio buttons */
 .radio-option input[type="radio"] {
   transform: scale(2);
   margin: 0 10px;
   cursor: pointer;
 }
 
-/* Fixed window for results */
+/* Updated results window: fixed smaller height (approx 2 rows) */
 .results-window {
   background: var(--card-bg);
-  border-radius: var(--radius);
+  border-radius: 8px;
   box-shadow: var(--shadow);
-  height: 400px;
-  /* Fixed height */
+  height: 110px;
+  /* Smaller height for ~2 rows */
   overflow-y: auto;
   border: 1px solid var(--border);
 }
@@ -152,35 +151,41 @@ button.search-btn:hover {
   border-collapse: collapse;
 }
 
-.results-table th {
-  position: sticky;
-  top: 0;
-  background: #f1f5f9;
-  text-align: right;
-  padding: 12px;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  border-bottom: 2px solid var(--border);
+/* Hide table headers as requested */
+.results-table thead {
+  display: none;
 }
 
 .results-table td {
-  padding: 12px;
+  padding: 10px 15px;
   border-bottom: 1px solid var(--border);
   font-size: 1rem;
+  line-height: 1.2;
+}
+
+/* Zebra striping: Light Green and White */
+.results-table tr:nth-child(odd) {
+  background-color: var(--row-alt);
+  /* Light Green */
+}
+
+.results-table tr:nth-child(even) {
+  background-color: #ffffff;
+  /* White */
 }
 
 .results-table tr:hover {
-  background-color: #f8fafc;
+  filter: brightness(0.98);
 }
 
 .row-delete-btn {
-  padding: 4px 8px;
+  padding: 2px 6px;
   background: transparent;
   color: var(--danger);
   border: 1px solid var(--danger);
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
 }
 
 .row-delete-btn:hover {

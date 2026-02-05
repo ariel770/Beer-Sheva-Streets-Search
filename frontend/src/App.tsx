@@ -165,25 +165,13 @@ function App() {
 
             <div className="results-window">
                 <table className="results-table">
-                    <thead>
-                        <tr>
-                            <th>שם רחוב</th>
-                            <th>שכונה</th>
-                            <th>עיר</th>
-                            <th>סוג</th>
-                            <th>מיקוד</th>
-                            <th>פעולות</th>
-                        </tr>
-                    </thead>
                     <tbody>
                         {results.map((street) => (
                             <tr key={street.id}>
-                                <td>{street.street_name}</td>
-                                <td>{street.neighborhood}</td>
-                                <td>{street.city}</td>
-                                <td>{street.type}</td>
-                                <td>{street.zip_code}</td>
                                 <td>
+                                    <strong>{street.street_name}</strong> | {street.neighborhood} | {street.city} | {street.type} | {street.zip_code}
+                                </td>
+                                <td style={{ textAlign: 'left', width: '60px' }}>
                                     <button className="row-delete-btn" onClick={() => handleDelete(street.id)}>מחק</button>
                                 </td>
                             </tr>
@@ -191,8 +179,8 @@ function App() {
                     </tbody>
                 </table>
                 {results.length === 0 && !loading && (
-                    <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
-                        אין נתונים להצגה. בצע חיפוש כדי לראות תוצאות.
+                    <div style={{ textAlign: 'center', padding: '1rem', color: '#94a3b8', fontSize: '0.9rem' }}>
+                        אין נתונים להצגה. בצע חיפוש.
                     </div>
                 )}
             </div>
