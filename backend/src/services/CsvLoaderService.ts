@@ -52,6 +52,7 @@ export class CsvLoaderService {
             const title = findValue(record, ['תואר', 'title']);
             const type = findValue(record, ['סוג', 'type']);
             const zip_code = findValue(record, ['מיקוד', 'zip_code']);
+            const street_code = findValue(record, ['סמל רחוב', 'street_code', 'code']);
 
             record.street_name = record.street_name || name;
             record.neighborhood = record.neighborhood || neighborhood;
@@ -59,6 +60,7 @@ export class CsvLoaderService {
             record.title = record.title || title;
             record.type = record.type || type;
             record.zip_code = record.zip_code || zip_code;
+            record.street_code = record.street_code || street_code;
 
             record.city = record.city || findValue(record, ['עיר', 'city']) || 'באר שבע';
 

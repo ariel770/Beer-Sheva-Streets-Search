@@ -58,6 +58,9 @@
             "type": {
                 "type": "keyword"
             },
+            "street_code": {
+                "type": "keyword"
+            },
             "zip_code": {
                 "type": "keyword"
             },
