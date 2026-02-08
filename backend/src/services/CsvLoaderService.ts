@@ -46,11 +46,20 @@ export class CsvLoaderService {
             };
 
             // Map data from CSV columns to search fields
-            const name = findValue(record, ['שם ראשי', 'שם רחוב', 'street_name']);
+            const name = findValue(record, ['שם ראשי', 'שם רחוב', 'street_name', 'שם מלא']);
             const neighborhood = findValue(record, ['שכונה', 'neighborhood']);
+            const group = findValue(record, ['קבוצה', 'group']);
+            const title = findValue(record, ['תואר', 'title']);
+            const type = findValue(record, ['סוג', 'type']);
+            const zip_code = findValue(record, ['מיקוד', 'zip_code']);
 
             record.street_name = record.street_name || name;
             record.neighborhood = record.neighborhood || neighborhood;
+            record.group = record.group || group;
+            record.title = record.title || title;
+            record.type = record.type || type;
+            record.zip_code = record.zip_code || zip_code;
+
             record.city = record.city || findValue(record, ['עיר', 'city']) || 'באר שבע';
 
             batch.push(record);

@@ -8,6 +8,8 @@ import { UploadController } from './controllers/UploadController';
 import { CsvLoaderService } from './services/CsvLoaderService';
 import multer from 'multer';
 
+import { streetsMapping } from './utils/mapping';
+
 dotenv.config();
 
 const app = express();
@@ -20,6 +22,15 @@ const esService = new ElasticSearchService();
 const searchController = new SearchController(esService);
 const csvLoader = new CsvLoaderService(esService);
 const uploadController = new UploadController(csvLoader);
+
+(async () => {
+    try {
+        await esService.createIndexWithMapping(streetsMapping);
+        console.log('Index initialized on startup.');
+    } catch (error) {
+        console.error('Failed to initialize specific index mappings:', error);
+    }
+})();
 
 const upload = multer({ storage: multer.memoryStorage() });
 const csvPath = path.resolve(__dirname, '../../data/streets.csv');
