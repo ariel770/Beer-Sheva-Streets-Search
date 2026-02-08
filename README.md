@@ -57,6 +57,11 @@ The Backend service exposes the following endpoints:
 **URL:** `DELETE /api/streets/:id`  
 **Description:** Performs a "soft delete" by setting an `is_deleted` flag to true on the specified record.
 
+
+### 5. Database Mapping
+**Location:** `backend/src/utils/mapping.json`
+**Description:** This file defines the Elasticsearch index schema. It includes field types (text, keyword) and analyzers. The backend service automatically checks for this mapping on startup and creates the index if it doesn't exist.
+
 ---
 
 ## 🧪 Testing & Verification
